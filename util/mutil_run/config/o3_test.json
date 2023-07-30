@@ -1,0 +1,26 @@
+{
+    "paramSweep0": {
+       "outputDir": "./m5out/Sweep0",
+       "cpuConfig": {
+          "fetchWidth": [ 8 ],
+          "decodeWidth": [ 4 ],
+          "numIQEntries": [ 128 ],
+          "commitWidth": [ 4 ]
+      },
+       "cacheConfig": {
+          "l1d_size": ["32kB"],
+          "l1i_size": ["32kB"]
+      },
+       "memConfig": { },
+       "workloadConfig": [
+          "../../../riscv-tests/benchmarks"
+      ],
+       "keyStats": [
+          "simTicks",
+          "hostSeconds",
+          "system.cpu.ipc",
+          "simInsts",
+          "coremarkScore"
+      ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+    "paramSweep0": {
+       "outputDir": "./m5out/Sweep0",
+       "cpuConfig": {
+          "fetchWidth": {
+              "start": 8,
+              "end": 12,
+              "step": 2
+          },  
+          "decodeWidth": [ 4 ],
+          "numIQEntries": [ 32 ],
+          "commitWidth": [ 4 ]
+      },
+       "cacheConfig": {
+          "l1d_size": [ "32kB", "64kB" ],
+          "l1i_size": [ "32kB", "64kB" ]
+      },
+       "memConfig": { },
+       "workloadConfig": [
+          "../../../riscv-tests/benchmarks/coremark.riscv"
+      ],
+       "keyStats": [
+          "simTicks",
+          "hostSeconds",
+          "system.cpu.ipc",
+          "simInsts",
+          "coremarkScore"
+      ]
+  },
+   "paramSweep1": {
+      "outputDir": "./m5out/Sweep1",
+      "cpuConfig": {
+          "fetchWidth": 8,
+          "decodeWidth": 4,
+          "numIQEntries": 4,
+          "commitWidth": 4
+      },
+      "cacheConfig": { },
+      "memConfig": { },
+      "workloadConfig": [
+          "../../../riscv-tests/benchmarks/coremark.riscv"
+      ],
+      "keyStats": [
+          "simTicks",
+          "hostSeconds",
+          "system.cpu.ipc",
+          "simInsts",
+          "system.cpu.branchPred.lookups",
+          "system.cpu.commit.integer",
+          "system.cpu.commit.floating"
+      ]
+  }
+}
