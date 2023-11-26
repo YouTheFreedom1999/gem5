@@ -2059,6 +2059,8 @@ decode QUADRANT default Unknown::unknown() {
             }}, IsIndirectControl, IsUncondControl);
         }
 
+        0x1a: CustomFormat::CustomOp1();
+
         0x1b: JOp::jal({{
             Rd = rvSext(NPC);
             NPC = rvZext(PC + imm);

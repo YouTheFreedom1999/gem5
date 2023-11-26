@@ -65,6 +65,7 @@ from common.Caches import *
 from common import Options
 from RenaConfig import *
 from FuncUnit import *
+
 # ------------------------- Usage Instructions ------------------------- #
 # Common system confirguration options (cpu types, num cpus, checkpointing
 # etc.) should be supported
@@ -130,6 +131,13 @@ def generateDtb(system):
     fdt.writeDtbFile(path.join(m5.options.outdir, "device.dtb"))
 
 
+# ------------------------------ SOC Addr ------------------------------ #
+CLINT_PIO_ADDR = 0x2000000
+PLIC_PIO_ADDR = 0xC000000
+UART_PIO_ADDR = 0x10000000
+MEM_RANGES = 0x80000000
+DISK_PIO_ADDR = 0x10008000
+
 # ----------------------------- Add Options ---------------------------- #
 parser = argparse.ArgumentParser()
 Options.addCommonOptions(parser)
@@ -170,7 +178,7 @@ mdesc = SysConfig(
     os_type=args.os_type,
 )
 system.mem_mode = mem_mode
-system.mem_ranges = [AddrRange(start=0x80000000, size=mdesc.mem())]
+system.mem_ranges = [AddrRange(start=MEM_RANGES, size=mdesc.mem())]
 
 if args.bare_metal:
     system.workload = RiscvBareMetal()
@@ -186,6 +194,10 @@ system.system_port = system.membus.cpu_side_ports
 
 # HiFive Platform
 system.platform = HiFive()
+
+system.platform.clint = Clint(pio_addr=CLINT_PIO_ADDR)
+system.platform.plic = Plic(pio_addr=PLIC_PIO_ADDR)
+system.platform.uart = RiscvUart8250(pio_addr=UART_PIO_ADDR)
 
 # RTCCLK (Set to 100MHz for faster simulation)
 system.platform.rtc = RiscvRTC(frequency=Frequency("100MHz"))
@@ -297,51 +309,51 @@ for cpu in system.cpu:
     cpu.mmu.pma_checker = PMAChecker(uncacheable=uncacheable_range)
 
 for cpu in system.cpu:
-    cpu.decodeToFetchDelay     = args.decodeToFetchDelay        
-    cpu.renameToFetchDelay     = args.renameToFetchDelay        
-    cpu.iewToFetchDelay        = args.iewToFetchDelay              
-    cpu.commitToFetchDelay     = args.commitToFetchDelay        
-    cpu.commitToFetchDelay     = args.commitToFetchDelay        
-    cpu.fetchWidth             = args.fetchWidth                        
-    cpu.fetchBufferSize        = args.fetchBufferSize              
-    cpu.fetchQueueSize         = args.fetchQueueSize                
-    cpu.renameToDecodeDelay    = args.renameToDecodeDelay      
-    cpu.iewToDecodeDelay       = args.iewToDecodeDelay            
-    cpu.commitToDecodeDelay    = args.commitToDecodeDelay      
-    cpu.fetchToDecodeDelay     = args.fetchToDecodeDelay        
-    cpu.decodeWidth            = args.decodeWidth                      
-    cpu.iewToRenameDelay       = args.iewToRenameDelay            
-    cpu.commitToRenameDelay    = args.commitToRenameDelay      
-    cpu.decodeToRenameDelay    = args.decodeToRenameDelay      
-    cpu.renameWidth            = args.renameWidth                      
-    cpu.commitToIEWDelay       = args.commitToIEWDelay            
-    cpu.renameToIEWDelay       = args.renameToIEWDelay            
-    cpu.issueToExecuteDelay    = args.issueToExecuteDelay      
-    cpu.dispatchWidth          = args.dispatchWidth                  
-    cpu.issueWidth             = args.issueWidth                        
-    cpu.wbWidth                = args.wbWidth                              
-    cpu.iewToCommitDelay       = args.iewToCommitDelay            
-    cpu.renameToROBDelay       = args.renameToROBDelay            
-    cpu.commitWidth            = args.commitWidth                      
-    cpu.squashWidth            = args.squashWidth                      
-    cpu.trapLatency            = args.trapLatency                      
-    cpu.fetchTrapLatency       = args.fetchTrapLatency            
-    cpu.backComSize            = args.backComSize                      
-    cpu.forwardComSize         = args.forwardComSize                
-    cpu.LQEntries              = args.LQEntries                          
-    cpu.SQEntries              = args.SQEntries                          
-    cpu.LSQDepCheckShift       = args.LSQDepCheckShift            
-    cpu.store_set_clear_period = args.store_set_clear_period 
-    cpu.LFSTSize               = args.LFSTSize                         
-    cpu.SSITSize               = args.SSITSize                         
-    cpu.numRobs                = args.numRobs                           
-    cpu.numPhysIntRegs         = args.numROBEntries      
-    cpu.numPhysFloatRegs       = args.numROBEntries
-    cpu.numPhysVecRegs         = args.numPhysVecRegs             
-    cpu.numPhysVecPredRegs     = args.numPhysVecPredRegs     
-    cpu.numPhysCCRegs          = args.numPhysCCRegs               
-    cpu.numIQEntries           = args.numIQEntries                 
-    cpu.numROBEntries          = args.numROBEntries      
+    cpu.decodeToFetchDelay = args.decodeToFetchDelay
+    cpu.renameToFetchDelay = args.renameToFetchDelay
+    cpu.iewToFetchDelay = args.iewToFetchDelay
+    cpu.commitToFetchDelay = args.commitToFetchDelay
+    cpu.commitToFetchDelay = args.commitToFetchDelay
+    cpu.fetchWidth = args.fetchWidth
+    cpu.fetchBufferSize = args.fetchBufferSize
+    cpu.fetchQueueSize = args.fetchQueueSize
+    cpu.renameToDecodeDelay = args.renameToDecodeDelay
+    cpu.iewToDecodeDelay = args.iewToDecodeDelay
+    cpu.commitToDecodeDelay = args.commitToDecodeDelay
+    cpu.fetchToDecodeDelay = args.fetchToDecodeDelay
+    cpu.decodeWidth = args.decodeWidth
+    cpu.iewToRenameDelay = args.iewToRenameDelay
+    cpu.commitToRenameDelay = args.commitToRenameDelay
+    cpu.decodeToRenameDelay = args.decodeToRenameDelay
+    cpu.renameWidth = args.renameWidth
+    cpu.commitToIEWDelay = args.commitToIEWDelay
+    cpu.renameToIEWDelay = args.renameToIEWDelay
+    cpu.issueToExecuteDelay = args.issueToExecuteDelay
+    cpu.dispatchWidth = args.dispatchWidth
+    cpu.issueWidth = args.issueWidth
+    cpu.wbWidth = args.wbWidth
+    cpu.iewToCommitDelay = args.iewToCommitDelay
+    cpu.renameToROBDelay = args.renameToROBDelay
+    cpu.commitWidth = args.commitWidth
+    cpu.squashWidth = args.squashWidth
+    cpu.trapLatency = args.trapLatency
+    cpu.fetchTrapLatency = args.fetchTrapLatency
+    cpu.backComSize = args.backComSize
+    cpu.forwardComSize = args.forwardComSize
+    cpu.LQEntries = args.LQEntries
+    cpu.SQEntries = args.SQEntries
+    cpu.LSQDepCheckShift = args.LSQDepCheckShift
+    cpu.store_set_clear_period = args.store_set_clear_period
+    cpu.LFSTSize = args.LFSTSize
+    cpu.SSITSize = args.SSITSize
+    cpu.numRobs = args.numRobs
+    cpu.numPhysIntRegs = args.numROBEntries
+    cpu.numPhysFloatRegs = args.numROBEntries
+    cpu.numPhysVecRegs = args.numPhysVecRegs
+    cpu.numPhysVecPredRegs = args.numPhysVecPredRegs
+    cpu.numPhysCCRegs = args.numPhysCCRegs
+    cpu.numIQEntries = args.numIQEntries
+    cpu.numROBEntries = args.numROBEntries
 
 # --------------------------- DTB Generation --------------------------- #
 

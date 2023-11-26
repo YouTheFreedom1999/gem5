@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+      {
+        "name": "Gem5 Debug",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/RISCV/gem5.debug",
+        "args": [
+          "--debug-flags=O3CPUAll",
+          "--debug-file=trace.log",
+          "--quiet",
+          "configs/example/riscv/fs_linux.py",
+          "--kernel=xxx.elf",
+          "--cpu-type=O3CPUAll",
+          "--caches",
+          "--l1d_size=64kB",
+          "--l1i_size=32kB",
+          "'--param=system.cpu[0].xxx=0'",
+          "--useDiff"
+          // "--mem-type=DDR4_2400_8x8",
+          // "--mem-size=128MB",
+          // "--memchecker"
+
+        ],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "miDebuggerPath": "/usr/bin/gdb"
+      },
+    ]
+}

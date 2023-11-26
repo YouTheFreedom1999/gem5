@@ -1,0 +1,25 @@
+{
+    "paramSweep0": {
+       "execute":"../build/RISCV/gem5.debug",
+       "script": "../configs/example/riscv/rena_fs.py",
+       "baseline": -1,
+       "outputDir": "./m5out/rena",
+
+      "cpuConfig": {
+          "decodeWidth" : [ 4 ]
+      },
+       "icacheConfig": {
+          "assoc" : [ 4 ]
+      },
+       "dcacheConfig":{
+          "assoc" : [ 4 ]
+      },
+       "l2Config":{
+          "assoc" : [ 4 ]
+      },
+       "workloadConfig": [
+          "workload/non-output/riscv-tests"
+      ],
+       "keyStats": ["simTicks"]
+  }
+}

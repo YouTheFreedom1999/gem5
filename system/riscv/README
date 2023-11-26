@@ -1,0 +1,14 @@
+0.首先要在系统中配置环境变量 RISCV64_SDK_RENA_HOME 将其指定为riscv-sdk的绝对路径
+1.riscv-sdk 为程序运行所需要的基本环境 包括启动脚本 堆栈分配 C常用库
+2.基于riscv-sdk可以在kernel中编写C语言程序
+3.程序编译参考./kernel/hello 增加源代码和Makefile文件
+4.添加完后使用 在相应文件夹下使用make命令编译 相关输出位于build文件夹
+5.编译时可指定START_ADDR选项确定程序起始地址
+
+安装:(Ubuntu20.04)
+$ sudo apt update
+$ sudo apt install build-essential gcc make perl dkms git gdb-multiarch qemu-system-misc g++-riscv64-linux-gnu
+
+仿真:
+  make run 在QEMU中运行程序
+  make debug QEMU与gdb联合调试

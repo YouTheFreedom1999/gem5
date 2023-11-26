@@ -53,8 +53,10 @@
 #include "cpu/o3/rename_map.hh"
 #include "cpu/o3/rob.hh"
 #include "cpu/timebuf.hh"
+#include "cpu/diff/Diff.hh"
 #include "enums/CommitPolicy.hh"
 #include "sim/probe/probe.hh"
+#include "arch/riscv/regs/misc.hh"
 
 namespace gem5
 {
@@ -453,6 +455,10 @@ class Commit
         interrupts are enabled and pending the pipeline will squash to avoid
         a possible livelock senario.  */
     bool avoidQuiesceLiveLock;
+
+    bool useDiff;
+
+    Diff *diff;
 
     /** Updates commit stats based on this instruction. */
     void updateComInstStats(const DynInstPtr &inst);

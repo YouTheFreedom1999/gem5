@@ -1,0 +1,7 @@
+
+
+def format CustomFormat() {{
+    iop = InstObjParams(name, Name, 'RiscvStaticInst')
+
+    decode_block = BasicDecode.subst(iop)
+}};

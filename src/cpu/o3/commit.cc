@@ -96,6 +96,7 @@ Commit::Commit(CPU *_cpu, const BaseO3CPUParams &params)
       trapLatency(params.trapLatency),
       canHandleInterrupts(true),
       avoidQuiesceLiveLock(false),
+      useDiff(params.useDiff),
       stats(_cpu, this)
 {
     if (commitWidth > MaxWidth)
@@ -130,6 +131,13 @@ Commit::Commit(CPU *_cpu, const BaseO3CPUParams &params)
         htmStops[tid] = 0;
     }
     interrupt = NoFault;
+
+    if(params.useDiff)
+        diff = new Diff(params.diffLibPath.c_str() , params.elfPath.c_str() ,  0xffffffff ,
+                        params.useQemuDiff,
+                        params.IntDiff , params.FpDiff , params.CsrDiff , params.VcsrDiff , params.VrfDiff);
+
+
 }
 
 std::string Commit::name() const { return cpu->name() + ".commit"; }
@@ -280,6 +288,12 @@ Commit::startupStage()
     cpu->activateStage(CPU::CommitIdx);
 
     cpu->activityThisCycle();
+
+    if (useDiff) {
+        auto workload = dynamic_cast<Workload *>(cpu->tcBase(0)->getSystemPtr()->workload);
+        diff->set_first_addr(workload->getEntry());
+    }
+
 }
 
 void
@@ -1017,6 +1031,144 @@ Commit::commitInsts()
                     cpu->checker->verify(head_inst);
                 }
 
+if(useDiff && (!head_inst->isMicroop() || (head_inst->isMicroop() && head_inst->isLastMicroop()))){
+                context_t ctx ;
+                instr_commit_t cmt;
+                int VENB = 4;
+
+                cmt.skip = false;
+                cmt.valid = true;
+                cmt.pc    = pc[tid]->instAddr() ;
+                cmt.inst  = head_inst->staticInst;
+                // (head_inst->staticInst).asBytes(&(cmt.inst) , 4);
+
+                if(head_inst->numDests() && (diff->isIntDiff() || diff->isFpDiff())){
+                    cmt.rfwen   = head_inst->renamedDestIdx(0)->is(IntRegClass)  ;
+                    cmt.fpwen   = head_inst->renamedDestIdx(0)->is(FloatRegClass)  ;
+                    cmt.wdest   = head_inst->flattenedDestIdx(0).index();
+                    // RegId t0(*(thread[tid]->getTC()->getIsaPtr()->regClasses()).at(IntRegClass), (uint16_t)cmt.wdest);
+                    // RegId t1(*(thread[tid]->getTC()->getIsaPtr()->regClasses()).at(FloatRegClass), (uint16_t)cmt.wdest);
+                    if((cmt.rfwen && cmt.wdest != 0) || cmt.fpwen)
+                        cmt.rfwdata = thread[tid]->getTC()->getReg(head_inst->destRegIdx(0));
+                }else{
+                    cmt.rfwen   = 0;
+                    cmt.fpwen   = 0;
+                    cmt.wdest   = 0;
+                    cmt.rfwdata = 0;
+                }
+
+                // thread[tid]->getTC()->getIsaPtr()->readMiscRegNoEffect();
+                // CSR
+                   // CSR
+                using namespace gem5::RiscvISA;
+                // if(diff->isCsrDiff()){
+
+
+                // // const std::unordered_map<int, CSRMetadata>& CSRData  = thread[tid]->getTC()->getIsaPtr()->getCSRDataMap();
+                // // const std::unordered_map<int, RegVal>&      CSRMasks = thread[tid]->getTC()->getIsaPtr()->getCSRMaskMap();
+
+                // // U mode CSR
+                // // ctx.ustatus = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_USTATUS).physIndex) & CSRMasks.at(CSR_USTATUS);
+                // // ctx.uie = thread[tid]->getTC()->readMiscReg(
+                // //     CSRData.at(CSR_UIE).physIndex) & CSRMasks.at(CSR_UIE);
+                // // ctx.utvec = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_UTVEC).physIndex);
+                // // ctx.uscratch = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_USCRATCH).physIndex);
+                // // ctx.uepc = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_UEPC).physIndex);
+                // // ctx.ucause = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_UCAUSE).physIndex);
+                // // ctx.utval = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_UTVAL).physIndex);
+                // // ctx.uip = thread[tid]->getTC()->readMiscReg(
+                // //     CSRData.at(CSR_UIP).physIndex) & CSRMasks.at(CSR_UIP);
+
+                // // S mode CSR
+                // ctx.sstatus = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_SSTATUS).physIndex) & CSRMasks.at(CSR_SSTATUS);
+                // // ctx.sedeleg = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_SEDELEG).physIndex);
+                // // ctx.sideleg = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_SIDELEG).physIndex);
+                // // ctx.sie = thread[tid]->getTC()->readMiscReg(
+                // //     CSRData.at(CSR_SIE).physIndex) & CSRMasks.at(CSR_SIE);
+                // ctx.stvec = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_STVEC).physIndex);
+                // // ctx.scounteren = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_SCOUNTEREN).physIndex);
+                // ctx.sscratch = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_SSCRATCH).physIndex);
+                // ctx.sepc = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_SEPC).physIndex);
+                // ctx.scause = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_SCAUSE).physIndex);
+                // ctx.stval = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_STVAL).physIndex);
+                // // ctx.sip = thread[tid]->getTC()->readMiscReg(
+                // //     CSRData.at(CSR_SIP).physIndex) & CSRMasks.at(CSR_SIP);
+                // ctx.satp = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_SATP).physIndex);
+
+                // // M mode CSR
+                // // ctx.mvendorid = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MVENDORID).physIndex);
+                // // ctx.marchid = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MARCHID).physIndex);
+                // // ctx.mimpid = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MIMPID).physIndex);
+                // // ctx.mhartid = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MHARTID).physIndex);
+                // ctx.mstatus = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MSTATUS).physIndex) & CSRMasks.at(CSR_MSTATUS);
+                // // ctx.misa = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MISA).physIndex) & CSRMasks.at(CSR_MISA);
+                // ctx.medeleg = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MEDELEG).physIndex);
+                // ctx.mideleg = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MIDELEG).physIndex);
+                // ctx.mie = thread[tid]->getTC()->readMiscReg(
+                //     CSRData.at(CSR_MIE).physIndex) & CSRMasks.at(CSR_MIE);
+                // ctx.mtvec = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MTVEC).physIndex);
+                // // ctx.mcounteren = thread[tid]->getTC()->readMiscRegNoEffect(
+                // //     CSRData.at(CSR_MCOUNTEREN).physIndex);
+                // ctx.mscratch = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MSCRATCH).physIndex);
+                // ctx.mepc = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MEPC).physIndex);
+                // ctx.mcause = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MCAUSE).physIndex);
+                // ctx.mtval = thread[tid]->getTC()->readMiscRegNoEffect(
+                //     CSRData.at(CSR_MTVAL).physIndex);
+                // ctx.mip = thread[tid]->getTC()->readMiscReg(
+                //     CSRData.at(CSR_MIP).physIndex) & CSRMasks.at(CSR_MIP);
+
+                //     ctx.mode     = 0;
+                // }
+
+                // // VCSR
+                // if(diff->isVcsrDiff()){
+                //     ctx.vl       = thread[tid]->getTC()->getIsaPtr()->readMiscRegNoEffect(MISCREG_VL    );
+                //     ctx.vstart   = thread[tid]->getTC()->getIsaPtr()->readMiscRegNoEffect(MISCREG_VSTART);
+                //     ctx.vtype    = thread[tid]->getTC()->getIsaPtr()->readMiscRegNoEffect(MISCREG_VTYPE );
+                // }
+
+
+                // const auto *vec_class = thread[tid]->getTC()->getIsaPtr()->regClasses().at(VecRegClass);
+                if(diff->isVrfDiff()){
+                    int i =0;
+                    for (auto &id: *(thread[tid]->getTC()->getIsaPtr()->regClasses()).at(VecRegClass)) {
+                        thread[tid]->getTC()->getReg(id, &(ctx.vpr[i * VENB]));
+                        i++;
+                        if(i == 32 ) break;
+                    }
+                }
+
+                diff->verify(&ctx , &cmt);
+                cmt.valid = false;
+}
                 cpu->traceFunctions(pc[tid]->instAddr());
 
                 head_inst->staticInst->advancePC(*pc[tid]);

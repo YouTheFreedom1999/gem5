@@ -31,7 +31,6 @@ m5out
 configs/example/memcheck.cfg
 configs/dram/lowp_sweep.cfg
 .pyenv
-.vscode
 util/mutil_run/python/__pycache__
 util/mutil_run/m5out
 util/mutil_run/backup

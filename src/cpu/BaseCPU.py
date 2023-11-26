@@ -158,6 +158,19 @@ class BaseCPU(ClockedObject):
 
     tracer = Param.InstTracer(default_tracer, "Instruction tracer")
 
+    useDiff = Param.Bool(False, " enable spike checker PC Stream ")
+    useQemuDiff = Param.Bool(False, " enable qemu checker PC Stream ")
+    diffLibPath = Param.String("", "diff Spike lib path")
+    elfPath = Param.String("", "run program elf file")
+    firstAddr = Param.Addr(0x80000000, "first addr , will be remove")
+    diffOffsetAddr = Param.Addr(0, "spike mem addr offset ")
+
+    IntDiff = Param.Bool(True, "Enable check Int  Diff   ")
+    FpDiff = Param.Bool(True, "Enable check Fp   Diff   ")
+    CsrDiff = Param.Bool(False, "Enable check Csr  Diff   ")
+    VcsrDiff = Param.Bool(False, "Enable check Vcsr Diff   ")
+    VrfDiff = Param.Bool(False, "Enable check vrf  Diff   ")
+
     icache_port = RequestPort("Instruction Port")
     dcache_port = RequestPort("Data Port")
     _cached_ports = ["icache_port", "dcache_port"]
