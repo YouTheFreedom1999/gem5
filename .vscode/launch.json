@@ -10,21 +10,21 @@
         "args": [
           "--debug-flags=O3CPUAll",
           "--debug-file=trace.log",
-          "--quiet",
+          // "--quiet",
           "configs/example/riscv/fs_linux.py",
-          "--kernel=xxx.elf",
-          "--cpu-type=O3CPUAll",
+          "--kernel=/home/axe/work/gem5-Rena/system/riscv/kernel/benchmarks/coremark/build/coremark.elf",
+          "--cpu-type=RiscvO3CPU",
           "--caches",
           "--l1d_size=64kB",
           "--l1i_size=32kB",
-          "'--param=system.cpu[0].xxx=0'",
-          "--useDiff"
+          // "'--param=system.cpu[0].xxx=0'",
+          // "--useDiff"
           // "--mem-type=DDR4_2400_8x8",
           // "--mem-size=128MB",
           // "--memchecker"
 
         ],
-        "stopAtEntry": false,
+        "stopAtEntry": true,
         "cwd": "${workspaceFolder}",
         "environment": [],
         "externalConsole": false,

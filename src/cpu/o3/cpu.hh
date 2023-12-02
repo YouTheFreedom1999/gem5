@@ -69,6 +69,7 @@
 #include "cpu/timebuf.hh"
 #include "params/BaseO3CPU.hh"
 #include "sim/process.hh"
+#include "cpu/o3/Hermes.hh"
 
 namespace gem5
 {
@@ -406,6 +407,7 @@ class CPU : public BaseCPU
 
     /** The dispatch stage. */
     Rename rename;
+    Hermes *hermes;
 
     /** The issue/execute/writeback stages. */
     IEW iew;
