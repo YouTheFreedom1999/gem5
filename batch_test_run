@@ -1,0 +1,13 @@
+#!/bin/bash
+
+build/RISCV/gem5.debug  -r -e -d m5out_debug_1   configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_1/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.debug  -r -e -d m5out_debug_10  configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_10/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.debug  -r -e -d m5out_debug_100 configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_100/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+
+build/RISCV/gem5.opt  -r -e -d m5out_opt_1   configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_1/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.opt  -r -e -d m5out_opt_10  configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_10/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.opt  -r -e -d m5out_opt_100 configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_100/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+
+build/RISCV/gem5.opt  -r -e -d m5out_fast_1   configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_1/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.opt  -r -e -d m5out_fast_10  configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_10/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
+build/RISCV/gem5.opt  -r -e -d m5out_fast_100 configs/example/riscv/fs_linux.py --kernel=/home/sjh/xiangshan/xs-env/nexus-am/apps/coremark/build_100/coremark-riscv64-xs.elf --cpu-type=RiscvO3CPU --caches &
