@@ -300,9 +300,9 @@ CPU::CPU(const BaseO3CPUParams &params)
         fatal("O3CPU %s has no interrupt controller.\n"
               "Ensure createInterruptController() is called.\n", name());
     }
-    hermes = new Hermes(8);
-    if(hermes)
-        debug::Flag::globalDisable();
+    // hermes = new Hermes(8);
+    // if(hermes)
+    //     debug::Flag::globalDisable();
 }
 
 void
@@ -369,27 +369,27 @@ CPU::tick()
     commit.tick();
 
     
-    if(curCycle() - hermes->last > 1000 && !hermes->is_child()){
-        hermes->last = curCycle();
-        FORK_PRINTF("Fork Point at %ld\n", curCycle());
-        switch(hermes->do_fork(curCycle())){
-            case FORK_ERROR: exit(0);break;
-            case WAIT_EXIT:  exit(0);break;
-            case WAIT_SEL:   {FORK_PRINTF("[replay]\n");debug::Flag::globalEnable();break;}
-            default: break;
-        }
-    }
+    // if(curCycle() - hermes->last > 1000 && !hermes->is_child()){
+    //     hermes->last = curCycle();
+    //     FORK_PRINTF("Fork Point at %ld\n", curCycle());
+    //     switch(hermes->do_fork(curCycle())){
+    //         case FORK_ERROR: exit(0);break;
+    //         case WAIT_EXIT:  exit(0);break;
+    //         case WAIT_SEL:   {FORK_PRINTF("[replay]\n");debug::Flag::globalEnable();break;}
+    //         default: break;
+    //     }
+    // }
 
-    if(curCycle() == 10000){
-        FORK_PRINTF("RUN Error \n");
-        hermes->process();
-        hermes->do_clear();
-        if(hermes->is_child())
-            exit(0);
-        else
-            exit(0);
-            //doExitSimLoop("Hermes STOP");
-    }
+    // if(curCycle() == 10000){
+    //     FORK_PRINTF("RUN Error \n");
+    //     hermes->process();
+    //     hermes->do_clear();
+    //     if(hermes->is_child())
+    //         exit(0);
+    //     else
+    //         exit(0);
+    //         //doExitSimLoop("Hermes STOP");
+    // }
 
     // Now advance the time buffers
     timeBuffer.advance();
