@@ -1,4 +1,5 @@
 build
+gem5_build
 parser.out
 parsetab.py
 cscope.files
@@ -35,3 +36,5 @@ util/mutil_run/python/__pycache__
 util/mutil_run/m5out
 util/mutil_run/backup
 util/mutil_run/report
+.vscode
+typings
